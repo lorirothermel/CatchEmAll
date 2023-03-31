@@ -25,7 +25,7 @@ struct CreaturesListView: View {
         
         
     }  // some View
-}  // ContentView
+}  // CreaturesListView
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
