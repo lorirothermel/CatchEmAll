@@ -10,27 +10,34 @@ import SwiftUI
 struct CreaturesListView: View {
     @StateObject var creaturesVM = CreaturesViewModel()
     
+    @State private var searchText = ""
+    
+    
+    var searchResult: [Creature] {
+        if searchText.isEmpty {
+            return creaturesVM.creaturesArray
+        } else {
+            return creaturesVM.creaturesArray.filter {$0.name.capitalized.contains(searchText)}
+        }
+    }
+    
     
     var body: some View {
         NavigationStack {
             ZStack {
-                List(0..<creaturesVM.creaturesArray.count, id: \.self) { index in
+                List(searchResult) { creature in
                     LazyVStack {
                         NavigationLink {
-                            DetailView(creature: creaturesVM.creaturesArray[index])
+                            DetailView(creature: creature)
                         } label: {
-                            Text("\(index + 1). \(creaturesVM.creaturesArray[index].name.capitalized)")
+                            Text(creature.name.capitalized)
                                 .font(.title3)
                         }  // NavigationLink
                     }  // LazyVStack
                     .onAppear {
-                        if let lastCreature = creaturesVM.creaturesArray.last {
-                            if creaturesVM.creaturesArray[index].name == lastCreature.name && creaturesVM.urlString.hasPrefix("http") {
-                                Task {
-                                    await creaturesVM.getData()
-                                }  // Task
-                            }  // if
-                        }  // if let lastCreature
+                        Task {
+                            creaturesVM.loadNextIfNeeded(creature: creature)
+                        }  // Task
                     }  // onAppear
                     
                 }  // List
@@ -38,24 +45,28 @@ struct CreaturesListView: View {
                 .navigationTitle("Pokemon")
                 .toolbar {
                     ToolbarItem(placement: .bottomBar) {
+                        Button("Load All") {
+                            Task {
+                                await creaturesVM.loadAll()
+                            }  // Task
+                        }  // Button
+                    }  // ToolbarItem
+                    ToolbarItem(placement: .status) {
                         Text("\(creaturesVM.creaturesArray.count) of \(creaturesVM.count) creatures")
                     }  // ToolbarItem
                 }  // .toolbar
+                .searchable(text: $searchText)
                 
                 if creaturesVM.isLoading {
                     ProgressView()
                         .tint(.red)
                         .scaleEffect(4)
                 }  // if
-                
-                
             }  // ZStack
-
-            
         }  // NavigationStack
         .task {
             await creaturesVM.getData()
-        }
+        }  // .task
         
         
     }  // some View

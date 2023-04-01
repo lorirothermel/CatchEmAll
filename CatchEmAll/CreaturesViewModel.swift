@@ -50,9 +50,30 @@ class CreaturesViewModel: ObservableObject {
             print("🤬 ERROR: Could not get data from \(urlString)")
             isLoading = false
         }  // do...catch
-               
-        
     }  // func getData
+    
+    func loadNextIfNeeded(creature: Creature) {
+        guard let lastCreature = creaturesArray.last else { return }
+        
+        
+        if creature.id == lastCreature.id && urlString.hasPrefix("http") {
+                Task {
+                    await getData()
+                }  // Task
+            }  // if
+        
+    }
+    
+    
+    
+    func loadAll() async {
+        guard urlString.hasPrefix("http") else { return }
+        
+        await getData()  // Get the next page of data
+        await loadAll()
+    }
+    
+    
     
 }  // class CreaturesViewModel
 
