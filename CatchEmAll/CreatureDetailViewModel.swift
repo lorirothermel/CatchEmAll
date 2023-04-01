@@ -12,8 +12,8 @@ import Foundation
 class CreatureDetailViewModel: ObservableObject {
     
     private struct Returned: Codable {
-        var height: Double
-        var weight: Double
+        var height: Double?
+        var weight: Double?
         var sprites: Sprite
     }
    
@@ -60,9 +60,9 @@ class CreatureDetailViewModel: ObservableObject {
                 print("🤬 JSON ERROR: Could not decode returned JSON data")
                 return
             }  // guard let returned
-            self.height = returned.height
-            self.weight = returned.weight
-            self.imageURL = returned.sprites.other.officialArtwork.front_default ?? ""
+            self.height = returned.height ?? 0.0
+            self.weight = returned.weight ?? 0.0
+            self.imageURL = returned.sprites.other.officialArtwork.front_default ?? "n/a"
         } catch {
             print("🤬 ERROR: Could not get data from \(urlString)")
         }  // do...catch

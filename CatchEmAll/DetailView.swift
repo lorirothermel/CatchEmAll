@@ -27,42 +27,7 @@ struct DetailView: View {
             
             HStack {
                 
-                AsyncImage(url: URL(string: creatureDetailVM.imageURL)) { image in
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .background(.white)
-                        .frame(width: 96, height: 96)
-                        .cornerRadius(16)
-                        .shadow(radius: 8, x: 5, y: 5)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(.gray.opacity(0.5), lineWidth: 1)
-                        }  // .overlay
-                        .padding(.trailing)
-                } placeholder: {
-                    Rectangle()
-                        .foregroundColor(.clear)
-                        .frame(width: 96, height: 96)
-                        .padding(.trailing)
-                }
-
-                
-                
-                
-                
-//                Image(systemName: "figure.run.circle")
-//                    .resizable()
-//                    .scaledToFit()
-//                    .background(.white)
-//                    .frame(maxHeight: 96)
-//                    .cornerRadius(16)
-//                    .shadow(radius: 8, x: 5, y: 5)
-//                    .overlay {
-//                        RoundedRectangle(cornerRadius: 16)
-//                            .stroke(.gray.opacity(0.5), lineWidth: 1)
-//                    }  // .overlay
-//                    .padding(.trailing)
+                creatureImage
                                 
                 VStack(alignment: .leading) {
                     HStack(alignment: .top) {
@@ -97,6 +62,54 @@ struct DetailView: View {
         
     }  // some View
 }  // DetailView
+
+
+extension DetailView {
+    
+    var creatureImage: some View {
+        
+        AsyncImage(url: URL(string: creatureDetailVM.imageURL)) { phase in
+            
+            if let image = phase.image {        // Have a valid image
+                let _ = print("VALID IMAGE ***")
+                image
+                    .resizable()
+                    .scaledToFit()
+                    .background(.white)
+                    .frame(width: 96, height: 96)
+                    .cornerRadius(16)
+                    .shadow(radius: 8, x: 5, y: 5)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(.gray.opacity(0.5), lineWidth: 1)
+                    }  // .overlay
+                    .padding(.trailing)
+                             
+            } else if phase.image == nil {      // Have an error
+                let _ = print("!!!! ERROR LOADING IMAGE !!!")
+                Image(systemName: "questionmark.square.dashed")
+                    .resizable()
+                    .scaledToFit()
+                    .background(.white)
+                    .frame(width: 96, height: 96)
+                    .cornerRadius(16)
+                    .shadow(radius: 8, x: 5, y: 5)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(.gray.opacity(0.5), lineWidth: 1)
+                    }  // .overlay
+                    .padding(.trailing)
+            } else {                            // Use a placeholder
+                let _ = print("PPP Placeholder IMAGE")
+                Rectangle()
+                    .foregroundColor(.clear)
+                    .frame(width: 96, height: 96)
+                    .padding(.trailing)
+            }
+        }
+    }
+}
+
 
 struct DetailView_Previews: PreviewProvider {
     static var previews: some View {
